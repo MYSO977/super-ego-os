@@ -186,8 +186,26 @@ def route(chat_id, text):
     elif cmd=="/rag":     handle_rag(chat_id, args)
     elif cmd=="/done":    handle_done(chat_id, args)
     elif cmd=="/status":  handle_status(chat_id)
+    elif cmd=="/transit": handle_transit(chat_id, args)
     elif cmd in ("/help","/start"): reply(chat_id, HELP_TEXT)
     else: reply(chat_id, f"未知命令: {cmd}\n/help 查看列表")
+
+def handle_transit(chat_id, text):
+    if not text:
+        reply(chat_id, "用法: /transit 市中心 到 大学")
+        return
+    parts = text.split(" 到 ", 1) if " 到 " in text else text.split(" to ", 1)
+    if len(parts) != 2:
+        reply(chat_id, "用法: /transit 出发地 到 目的地")
+        return
+    origin, dest = parts[0].strip(), parts[1].strip()
+    reply(chat_id, f"_🚌 规划路线: {origin} → {dest}..._")
+    try:
+        from l5_life_os.transit_optimizer import groq_plan_route, format_route
+        route = groq_plan_route(origin, dest)
+        reply(chat_id, format_route(origin, dest, route))
+    except Exception as e:
+        reply(chat_id, f"路线规划失败: {e}")
 
 def handle_menu(chat_id):
     reply(chat_id, "_🍽 生成菜单..._")
