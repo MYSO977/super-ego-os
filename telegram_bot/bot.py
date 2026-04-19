@@ -187,8 +187,17 @@ def route(chat_id, text):
     elif cmd=="/done":    handle_done(chat_id, args)
     elif cmd=="/status":  handle_status(chat_id)
     elif cmd=="/transit": handle_transit(chat_id, args)
+    elif cmd=="/gig": handle_gig(chat_id)
     elif cmd in ("/help","/start"): reply(chat_id, HELP_TEXT)
     else: reply(chat_id, f"未知命令: {cmd}\n/help 查看列表")
+
+def handle_gig(chat_id):
+    reply(chat_id, "_💰 生成零工收入规划..._")
+    try:
+        from l2_action.delivery_scanner import run as gig_run
+        gig_run()
+    except Exception as e:
+        reply(chat_id, f"零工扫描失败: {e}")
 
 def handle_transit(chat_id, text):
     if not text:
